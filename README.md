@@ -11,8 +11,8 @@ GoodCharacter.py
 PDF2Txt.py
  - Contains the PDF-to-Text converter
  - Handles the batch file reading
- - Contains 4 functions, IterateFolder2() is the usable one, the rest are for references
- - saves the text in dictionary
+ - Contains 4 functions, ReadFolder() is the usable one, ReadPDF() is for reading pdf (you dont need to use this), the rest are for references
+ - saves the text in a dictionary
 
 boyerless.py
 - contains the actual algorithm
