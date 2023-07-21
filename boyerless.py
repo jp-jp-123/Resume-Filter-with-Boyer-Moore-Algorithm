@@ -190,7 +190,7 @@ def main():
 
     pattern = "VMWare"
 
-    folder = p2t.IterateFolder2()
+    folder = p2t.ReadFolder()
 
     for file, filetext in folder.items():
         print(f"File: {file}")

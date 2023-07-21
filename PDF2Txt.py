@@ -39,7 +39,7 @@ def IterateFolder():
 
 
 # Modified IterateFolder, the usable one
-def IterateFolder2():
+def ReadFolder():
     textPerFile = {}
 
     for file in os.listdir():
@@ -52,7 +52,7 @@ def IterateFolder2():
 
 
 if __name__ == '__main__':
-    folder = IterateFolder2()
+    folder = ReadFolder()
 
     for file, filetext in folder.items():
         print(f"File: {file}")
