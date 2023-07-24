@@ -1,15 +1,18 @@
 #
-#
-#
+#   Authors:
+#   John Paul Beltran
+#   Gian Paolo Buenconsejo
+#   Johnmar James Munar
+#   Kim Montana
+#   
 
 import os
-# import PDF2Txt as p2t
+from logger import logger
 from file_handler import PDFHandler
 
 
 # Expanded the char table to questionable size to accommodate questionable characters
 NO_OF_CHARS = 10000
-
 
 def cls():
     """
@@ -98,6 +101,8 @@ def search(text: str, pattern: str, EnableDebug=False) -> BoyerMoore:
     Search a given pattern in a given text using the
     Bad Character and Good Suffix rules of the Boyer Moore Algorithm.
     """
+
+
     result = BoyerMoore()
     result.text_length = text_length = len(text)
     result.pattern_length = pattern_length = len(pattern)
@@ -181,29 +186,25 @@ def search(text: str, pattern: str, EnableDebug=False) -> BoyerMoore:
 
 
 def main():
-    cls()
-    # with open(r"D:\Downloads\passage.text", "r", encoding="utf-8") as file:
-    #     text = file.read()
-    # file.close()
-
-    pdf_handler = PDFHandler()
-
+    pdf_handler = PDFHandler(enableLogging=True)
     # GUI should utilize this command
     pdf_handler.set_path("C:/Users/Owner/Documents/GitHub/DAA/test data/ACCOUNTANT/")
-
     folder = pdf_handler.read()
+
     pattern = "staff"
 
+    cls()
     for pdf_file, pdf_contents in folder.items():
         print(f"File: {pdf_file}")
         text = pdf_contents
-        result = search(text, pattern, False)
+        result = search(text, pattern, EnableDebug=False)
 
-        print(f"{text}\n")
-        print(f"{pattern}\n")
         print(f"Text length: {result.text_length}")
         print(f"Pattern occurences: {result.matches}")
         print(f"Pattern count: {result.pattern_count}")
+
+    print("\nLogs:")
+    print(logger.get_logs())
 
 
 main()

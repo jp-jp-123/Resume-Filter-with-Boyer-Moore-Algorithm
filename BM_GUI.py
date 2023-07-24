@@ -1,3 +1,8 @@
+#
+#   Author:
+#   Johnmar James Munar
+#   
+
 import tkinter as tk
 from tkinter import PhotoImage, ttk, font
 from PIL import ImageTk, Image
