@@ -7,9 +7,9 @@ root.title("Boyer Moore Resume Filter")
 root.geometry("900x750")
 
 # Image here
-"""backimage_menu = Image.open("bgdaa.png")
+backimage_menu = Image.open("bgdaa1.png")
 backimage_menu = backimage_menu.resize((900, 750), Image.LANCZOS)
-tk_image_menu = ImageTk.PhotoImage(backimage_menu)"""
+tk_image_menu = ImageTk.PhotoImage(backimage_menu)
 
 def show_page(page):
     if page == "main_menu":
@@ -23,31 +23,35 @@ def mainpage():
     global folder_entry1, folder_entry2, label1, label2, label3, checkbox, log_text, button1
 
     #Image Calling
-    """main_menu.config(width=900, height=750)
-    main_menu.create_image(0, 0, anchor="nw", image=tk_image_menu)"""
+    main_menu.config(width=900, height=750)
+    main_menu.create_image(0, 0, anchor="nw", image=tk_image_menu)
 
-    label1 = tk.Label(main_menu, text="Select Folder", font=("Arial", 20), bd=0, highlightthickness=0, highlightbackground="SystemButtonFace")
+    label1 = tk.Label(main_menu, text="Select Folder", font=("Arial", 20),bg ="#D4D4D4", bd=0, highlightthickness=0, highlightbackground="SystemButtonFace")
     label1.place(x=50, y=87)
 
     folder_entry1 = tk.Entry(main_menu, width=70, font=("Arial", 12), bg ="#FFFFFF" ,bd=0, highlightthickness=0, highlightbackground="SystemButtonFace", insertbackground="black")
-    folder_entry1.place(x=50, y=137)
+    folder_entry1.place(x=40, y=137)
 
-    label2 = tk.Label(main_menu, text="Skills", font=("Arial", 20))
-    label2.place(x=50, y=177)
+    label2 = tk.Label(main_menu, text="Skills", font=("Arial", 20),bg ="#D4D4D4",)
+    label2.place(x=40, y=177)
 
     folder_entry2 = tk.Entry(main_menu, width=70, font=("Arial", 12), bd=0,bg ="#FFFFFF", highlightthickness=0, highlightbackground="SystemButtonFace", insertbackground="black")
-    folder_entry2.place(x=50, y=233)
+    folder_entry2.place(x=40, y=233)
 
     checkbox_var = tk.BooleanVar()
-    checkbox = tk.Checkbutton(main_menu, width=20, text="Create folder for matches", variable=checkbox_var, font=("Arial", 11))
-    checkbox.place(x=50, y=257)
+    checkbox = tk.Checkbutton(main_menu, width=20, text="Create folder for matches", variable=checkbox_var, bg ="#D4D4D4",font=("Arial", 11))
+    checkbox.place(x=40, y=257)
 
-    label3 = tk.Label(main_menu, text="Log:", font=("Arial", 20))
-    label3.place(x=50, y=287)
+    label3 = tk.Label(main_menu, text="Log:", bg ="#D4D4D4",font=("Arial", 20))
+    label3.place(x=40, y=287)
     
     button1 = tk.Button(main_menu, text= "About", height=2, width=17, command=lambda: show_page("page1"), font=("Arial", 13))#, bg="white", fg="black", relief=tk.FLAT, borderwidth=0, highlightthickness=0)
-    button1.place(x=50, y=650)
+    button1.place(x=40, y=600)
     button1.lift()
+
+    button2 = tk.Button(main_menu, text= "Start", height=2, width=17,  font=("Arial", 13))#,command=lambda: show_page("page1"), bg="white", fg="black", relief=tk.FLAT, borderwidth=0, highlightthickness=0)
+    button2.place(x=690, y=600)
+    button2.lift()
     # Function for the log
     def add_log_entry(text):
         log_text.config(state=tk.NORMAL)
@@ -55,7 +59,7 @@ def mainpage():
         log_text.config(state=tk.DISABLED)
 
     canvas_frame = tk.Frame(main_menu)
-    canvas_frame.place(x=50, y=327, width=800, height=300)
+    canvas_frame.place(x=40, y=327, width=800, height=250)
 
     
     canvas = tk.Canvas(canvas_frame, bg="white")
