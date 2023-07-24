@@ -23,9 +23,9 @@ class PDFHandler:
         Folder's directory to operate on.
     """
     
-    def __init__(self, path: str=None, enableLogging: bool=False):
+    def __init__(self, path: str=None, enable_logging: bool=False):
         self.folder_path = path
-        self.EnableLogging = enableLogging
+        self.enable_logging = enable_logging
         self.current_log = ""
 
     def set_path(self, path: str):
@@ -34,7 +34,7 @@ class PDFHandler:
         """
         self.folder_path = path
         
-        if self.EnableLogging:
+        if self.enable_logging:
             logger.log(f"Set root directory to {path}")
 
     def read(self, path: str=None) -> dict[str, str]:
@@ -48,24 +48,24 @@ class PDFHandler:
         if path == None:
             path = self.folder_path
 
-        if self.EnableLogging:
+        if self.enable_logging:
             logger.log(f"Start reading folder {self.folder_path}")
 
         for file in os.listdir(path):
             if file.endswith('.pdf'):
                 file_path = f'{path}\{file}'
 
-                if self.EnableLogging:
+                if self.enable_logging:
                     logger.log(f"Reading {file}...")
 
                 file_contents = self._read_pdf(file_path)
                 pdf_files_with_content[file] = file_contents
 
-                if self.EnableLogging:
+                if self.enable_logging:
                     logger.log(f"Done reading {file}")
 
-        if self.EnableLogging:
-            logger.log(f"End of reading folder {self.folder_path}")
+        # if self.enable_logging:
+        #     logger.log(f"End of reading folder {self.folder_path}")
 
         return pdf_files_with_content
 

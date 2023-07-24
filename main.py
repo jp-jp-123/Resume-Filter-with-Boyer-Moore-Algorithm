@@ -40,10 +40,12 @@ class BoyerMoore:
             self.pattern_count = len(self.matches)
             self.total_shifts = 0
             
-    def __init__(self) -> None:
+
+    def __init__(self, enable_logging=False) -> None:
         self.filepath = ""
         self.patterns = []
         self.results = []
+        self.enable_logging = enable_logging
 
     def set_path(self, filepath: str):
         """
@@ -221,7 +223,8 @@ class BoyerMoore:
         """
         Start Boyer-Moore algorithm.
         """
-        pdf_handler = PDFHandler(enableLogging=True)
+        # Process files
+        pdf_handler = PDFHandler(enable_logging=True)
         pdf_handler.set_path(self.filepath)
         folder = pdf_handler.read()
 
@@ -239,11 +242,12 @@ class BoyerMoore:
 
 
 def main():
-    boyer_moore = BoyerMoore()
-    # GUI should utilize this command
+    boyer_moore = BoyerMoore(enable_logging=True)
+    # GUI should utilize this command vv
     boyer_moore.set_path("C:/Users/Owner/Documents/GitHub/DAA/test data/ACCOUNTANT/")
     boyer_moore.add_pattern("staff")
     boyer_moore.add_pattern("person")
+    boyer_moore.add_pattern("data")
     boyer_moore.start()
 
     for result in boyer_moore.results:
