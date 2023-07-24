@@ -10,7 +10,6 @@ import os
 from logger import logger
 from file_handler import PDFHandler
 
-
 # Expanded the char table to questionable size to accommodate questionable characters
 NO_OF_CHARS = 10000
 
@@ -31,13 +30,13 @@ class BoyerMoore:
         Boyer-Moore result object.
         """
 
-        def __init__(self):
+        def __init__(self, filename: str=""):
+            self.filename = filename
             self.pattern = ""
-            self.filename = ""
             self.text_length = 0
             self.pattern_length = 0
             self.matches = []
-            self.pattern_count = len(self.matches)
+            self.matches_count = len(self.matches)
             self.total_shifts = 0
             
 
@@ -45,6 +44,8 @@ class BoyerMoore:
         self.filepath = ""
         self.patterns = []
         self.results = []
+        self.matched_pdfs = []
+        self.unmatched_pdfs = []
         self.enable_logging = enable_logging
 
     def set_path(self, filepath: str):
@@ -59,7 +60,7 @@ class BoyerMoore:
         """
         self.patterns.append(pattern)
 
-    def _preprocess_bad_char(self, pattern):
+    def _preprocess_bad_char(self, pattern: str):
         """
         Preprocessing function for bad character heuristic.
         """
@@ -126,16 +127,15 @@ class BoyerMoore:
             if i == j:
                 j = borderPosition[j]
 
-    def _search(self, text: str, pattern: str, EnableDebug=False) -> Result:
+    def _search(self, text: str, pattern: str, enable_debugging=False) -> Result:
         """
         Search a given pattern in a given text using the
         Bad Character and Good Suffix rules of the Boyer Moore Algorithm.
 
         ### Params
-        - text:
-        - pattern: 
+        - text: text to search into
+        - pattern: pattern to search in text
         """
-
 
         result = self.Result()
         result.text_length = text_length = len(text)
@@ -155,7 +155,7 @@ class BoyerMoore:
             # Keep comparing characters until mismatch
             # This is relative to the current shift
             while j >= 0 and pattern[j] == text[current_shift + j]:
-                if EnableDebug:
+                if enable_debugging:
                     cls()
                     print(text)
                     space = " " * current_shift
@@ -166,7 +166,7 @@ class BoyerMoore:
                     input()
                 j -= 1
 
-            if EnableDebug and j > 0:
+            if enable_debugging and j > 0:
                 cls()
                 print(text)
                 space = " " * current_shift
@@ -178,9 +178,10 @@ class BoyerMoore:
             # If the pattern is present at current shift
             # then index j will become -1 after the above loop
             if j < 0:
-                if EnableDebug:
+                if enable_debugging:
                     print(f"Pattern match at: {current_shift + 1}")
                 result.matches.append(current_shift)
+
                 """   
                 Shift the pattern so that the next character in text
                 aligns with the last occurrence of it in pattern.
@@ -203,7 +204,7 @@ class BoyerMoore:
                 bad_character_shift = max(1, j - bad_char[ord(text[current_shift + j])])
                 good_suffix_shift = suffix_shift_table[j + 1]
 
-            if EnableDebug:
+            if enable_debugging:
                 print(f"BCS: {bad_character_shift} | GSS: {good_suffix_shift}")
                 if (bad_character_shift > good_suffix_shift):
                     print("Will use Bad character rule")
@@ -216,7 +217,7 @@ class BoyerMoore:
 
         result.pattern = pattern
         result.total_shifts = current_shift
-        result.pattern_count = len(result.matches)
+        result.matches_count = len(result.matches)
         return result
 
     def start(self):
@@ -240,6 +241,8 @@ class BoyerMoore:
                 result.filename = pdf_file
                 self.results.append(result)
 
+                #TODO: Resume segretation (matched and unmatched)
+
 
 def main():
     boyer_moore = BoyerMoore(enable_logging=True)
@@ -255,8 +258,9 @@ def main():
         print(f"\tPattern: {result.pattern}")
         print(f"\tText length: {result.text_length}")
         print(f"\tPattern occurences: {result.matches}")
-        print(f"\tPattern count: {result.pattern_count}")
+        print(f"\tPattern count: {result.matches_count}")
 
+    print("\nLogs:")
     print(logger.get_logs())
 
 main()
