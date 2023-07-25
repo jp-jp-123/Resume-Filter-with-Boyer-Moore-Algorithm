@@ -346,7 +346,6 @@ def main():
 
         filename = files
         patterns = separator.join(file_patterns_dict[files])
-        print(filename, patterns)
 
         pdfhandler._copy_pdf(set_path, files, patterns)
 
