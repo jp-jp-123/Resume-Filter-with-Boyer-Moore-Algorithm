@@ -1,5 +1,6 @@
 import tkinter as tk
 import threading
+# import boyermoore
 from boyermoore import BoyerMoore
 from tkinter import PhotoImage, ttk, font, filedialog
 from PIL import ImageTk, Image
@@ -15,7 +16,7 @@ class ResumeFilterApp(tk.Tk):
         self.show_main_menu()
 
         #
-        self.boyer_moore = BoyerMoore()
+        self.boyer_moore = BoyerMoore(enable_logging=True)
 
     def set_path(self):
         path = self.entry_folder.get()
@@ -27,6 +28,9 @@ class ResumeFilterApp(tk.Tk):
 
     def start_boyer_moore(self):
         self.boyer_moore.start()
+        self.boyer_moore.parse_results()
+        self.boyer_moore.segregate_pdf()
+        logger.make_logfile(self.boyer_moore.filepath)
 
     def start(self):
         self.set_path()

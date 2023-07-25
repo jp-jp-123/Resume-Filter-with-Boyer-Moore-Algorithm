@@ -246,8 +246,6 @@ class BoyerMoore:
 
                 self.results.append(results)
 
-        self.segregate_pdf()
-        print("done")
 
     def parse(self, string: str):
         """
