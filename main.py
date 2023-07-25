@@ -236,40 +236,93 @@ class BoyerMoore:
 
             text = pdf_contents
 
-            for pattern in self.patterns:
-                result = self._search(text, pattern)
-                result.filename = pdf_file
-                self.results.append(result)
+            for patterns in self.patterns:
+                results = []
+                for pattern in patterns:
+                    result = self._search(text, pattern)
+                    result.filename = pdf_file
+                    results.append(result)
+                
+                self.results.append(results)
 
                 #TODO: Resume segretation (matched and unmatched)
+
+    def parse(self, string: str):
+        """
+        Parse string with operators and/or
+        """
+        self.string = string.split("or")
+        self.patterns = []
+
+        for i, word in enumerate(self.string):
+            word = word.strip().strip("(").strip(")")
+            word = word.split(" and ")
+
+            self.patterns.append(word)
+
+    def parse_results(self) -> list:
+        """
+        Parse list of results
+        """
+        # One PDF file is tied with one result object
+
+        # Iterate through results (it's a list of list)
+        self.matches = []
+
+        for results in self.results:
+            # Result is an OR statement
+            if len(results) == 1:
+                for result in results:
+                    if result.matches_count != 0:
+                        self.matches.append(results)
+            # Result is an AND statement
+            else:
+                has_matches = False
+                # Check if all results have matches
+                for result in results:
+                    # One result that doesn't have matches breaks the loop
+                    if result.matches_count == 0:
+                        has_matches = False
+                        break
+                    # All files in the result have matches
+                    has_matches = True
+
+                if has_matches:
+                    self.matches.append(results)
+
+        return
 
 
 def main():
     boyer_moore = BoyerMoore(enable_logging=True)
     # GUI should utilize this command vv
-    set_path = r"C:\Users\Lenovo\Documents\DOCX\test data\ACCOUNTANT"
+    set_path = r"C:\Users\Owner\Documents\GitHub\DAA\test data\ACCOUNTANT"
+
     boyer_moore.set_path(set_path)
-    boyer_moore.add_pattern("staff")
-    boyer_moore.add_pattern("person")
-    boyer_moore.add_pattern("data")
+    boyer_moore.parse("employee or (budget and cost and invoice) or (sql and python)")
+    # boyer_moore.add_pattern("staff")
+    # boyer_moore.add_pattern("person")
+    # boyer_moore.add_pattern("data")
     boyer_moore.start()
+    boyer_moore.parse_results()
+
 
     pdfhandler = PDFHandler()
 
-    for result in boyer_moore.results:
-        print(f"File: {result.filename}")
-        print(f"\tPattern: {result.pattern}")
-        print(f"\tText length: {result.text_length}")
-        print(f"\tPattern occurences: {result.matches}")
-        print(f"\tPattern count: {result.matches_count}")
+    # for result in boyer_moore.results:
+    #     print(f"File: {result.filename}")
+    #     print(f"\tPattern: {result.pattern}")
+    #     print(f"\tText length: {result.text_length}")
+    #     print(f"\tPattern occurences: {result.matches}")
+    #     print(f"\tPattern count: {result.matches_count}")
 
-        # Add condition later to enable and disable this function
-        if result.matches_count > 0:
-            pdfhandler._copy_pdf(set_path, result.filename, result.pattern)
+    #     # Add condition later to enable and disable this function
+    #     if result.matches_count > 0:
+    #         pdfhandler._copy_pdf(set_path, result.filename, result.pattern)
 
-    pdfhandler._del_pdf(set_path)
+    # pdfhandler._del_pdf(set_path)
 
     print("\nLogs:")
     print(logger.get_logs())
 
-main()
+# main()
