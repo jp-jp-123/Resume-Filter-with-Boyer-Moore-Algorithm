@@ -247,7 +247,8 @@ class BoyerMoore:
 def main():
     boyer_moore = BoyerMoore(enable_logging=True)
     # GUI should utilize this command vv
-    boyer_moore.set_path("C:/Users/Owner/Documents/GitHub/DAA/test data/ACCOUNTANT/")
+    set_path = r"C:\Users\Lenovo\PycharmProjects\DAA\test data\ACCOUNTANT"
+    boyer_moore.set_path(set_path)
     boyer_moore.add_pattern("staff")
     boyer_moore.add_pattern("person")
     boyer_moore.add_pattern("data")
@@ -259,6 +260,11 @@ def main():
         print(f"\tText length: {result.text_length}")
         print(f"\tPattern occurences: {result.matches}")
         print(f"\tPattern count: {result.matches_count}")
+
+        # Add condition later to enable and disable this function
+        if result.matches_count > 0:
+            pdfhandler = PDFHandler()
+            pdfhandler._copy_pdf(set_path, result.filename, result.pattern)
 
     print("\nLogs:")
     print(logger.get_logs())

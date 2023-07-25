@@ -9,6 +9,7 @@
 
 import os
 import datetime
+import shutil
 from logger import logger
 from pypdf import PdfReader as PDFReader
 
@@ -22,8 +23,8 @@ class PDFHandler:
     path : str
         Folder's directory to operate on.
     """
-    
-    def __init__(self, path: str=None, enable_logging: bool=False):
+
+    def __init__(self, path: str = None, enable_logging: bool = False):
         self.folder_path = path
         self.enable_logging = enable_logging
         self.current_log = ""
@@ -33,11 +34,11 @@ class PDFHandler:
         Set folder path to batch-read PDF files on.
         """
         self.folder_path = path
-        
+
         if self.enable_logging:
             logger.log(f"Set root directory to {path}")
 
-    def read(self, path: str=None) -> dict[str, str]:
+    def read(self, path: str = None) -> dict[str, str]:
         """
         Reads all PDF files from the root directory and its PDF contents.
         ### Returns
@@ -85,3 +86,28 @@ class PDFHandler:
             content += page.extract_text() + "\n"
 
         return content
+
+    def _copy_pdf(self, path, file_matches, pattern):
+        """
+        Creates a new folder in root directory with pattern as the name, then copies all the file with
+        matches into it.
+        :param file_matches: filenames of the matched pdfs
+        :param pattern: the pattern to be used in new directory
+        :return:
+        """
+
+        file_matches_list = [file_matches]
+
+        new_path = os.path.join(path, pattern)
+        try:
+            os.mkdir(new_path)
+        except OSError:
+            pass
+
+        for file in range(len(file_matches_list)):
+            current_file = file_matches_list[file]
+
+            source_file = os.path.join(path, current_file)
+            destination_file = os.path.join(new_path, current_file)
+
+            shutil.copy2(source_file, destination_file)
