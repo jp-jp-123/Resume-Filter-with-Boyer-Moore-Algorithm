@@ -124,6 +124,7 @@ class ResumeFilterApp(tk.Tk):
         self.log_text.config(state=tk.NORMAL)
         self.log_text.insert(tk.END, text + "\n")
         self.log_text.config(state=tk.DISABLED)
+        self.log_text.see(tk.END)
 
     def select_folder(self, event):
         folder_selected = filedialog.askdirectory()
