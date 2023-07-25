@@ -2,135 +2,107 @@ import tkinter as tk
 from tkinter import PhotoImage, ttk, font
 from PIL import ImageTk, Image
 
-root = tk.Tk()
-root.title("Boyer Moore Resume Filter")
-root.geometry("900x750")
+class ResumeFilterApp(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("Boyer Moore Resume Filter")
+        self.geometry("900x750")
+        self.disable_minimize_button()
+        self.setup_images()
+        self.show_main_menu()
 
-# Image here
-backimage_menu = Image.open("bgdaa1.png")
-backimage_menu = backimage_menu.resize((900, 750), Image.LANCZOS)
-tk_image_menu = ImageTk.PhotoImage(backimage_menu)
+    def disable_minimize_button(self):
+        self.resizable(False, False)
 
-def show_page(page):
-    if page == "main_menu":
+    def setup_images(self):
+        # Image for main_menu
+        backimage_menu = Image.open("bgdaa1.png")
+        backimage_menu = backimage_menu.resize((900, 750), Image.LANCZOS)
+        self.tk_image_menu = ImageTk.PhotoImage(backimage_menu)
+
+        # Image for about page
+        backimage_about = Image.open("daaabout.png")
+        backimage_about = backimage_about.resize((900, 750), Image.LANCZOS)
+        self.tk_image_about = ImageTk.PhotoImage(backimage_about)
+
+    def show_main_menu(self):
+        main_menu = tk.Canvas(self, width=900, height=750)
         main_menu.place(x=0, y=0)
-        page1.place_forget()
-    elif page == "page1":
-        main_menu.place_forget()
-        page1.place(x=0, y=0)
+        main_menu.config(width=900, height=750)
+        main_menu.create_image(0, 0, anchor="nw", image=self.tk_image_menu)
 
-def mainpage():
-    global folder_entry1, folder_entry2, label1, label2, label3, checkbox, log_text, button1
+        label1 = tk.Label(main_menu, text="Select Folder", font=("Arial", 20), bg="#D4D4D4", bd=0, highlightthickness=0, highlightbackground="SystemButtonFace")
+        label1.place(x=50, y=87)
 
-    # Create a canvas widget for main_menu
-    main_menu = tk.Canvas(root, width=900, height=750)
-    main_menu.place(x=0, y=0)
+        folder_entry1 = tk.Entry(main_menu, width=70, font=("Arial", 12), bg="#FFFFFF", bd=0, highlightthickness=0, highlightbackground="SystemButtonFace", insertbackground="black")
+        folder_entry1.place(x=45, y=140)
 
-    #Image Calling
-    main_menu.config(width=900, height=750)
-    main_menu.create_image(0, 0, anchor="nw", image=tk_image_menu)
+        label2 = tk.Label(main_menu, text="Skills", font=("Arial", 20), bg="#D4D4D4")
+        label2.place(x=40, y=177)
 
-    label1 = tk.Label(main_menu, text="Select Folder", font=("Arial", 20),bg ="#D4D4D4", bd=0, highlightthickness=0, highlightbackground="SystemButtonFace")
-    label1.place(x=50, y=87)
+        folder_entry2 = tk.Entry(main_menu, width=70, font=("Arial", 12), bd=0, bg="#FFFFFF", highlightthickness=0, highlightbackground="SystemButtonFace", insertbackground="black")
+        folder_entry2.place(x=45, y=228)
 
-    folder_entry1 = tk.Entry(main_menu, width=70, font=("Arial", 12), bg ="#FFFFFF" ,bd=0, highlightthickness=0, highlightbackground="SystemButtonFace", insertbackground="black")
-    folder_entry1.place(x=45, y=140)
+        checkbox_var = tk.BooleanVar()
+        checkbox = tk.Checkbutton(main_menu, width=20, text="Create folder for matches", variable=checkbox_var, bg="#D4D4D4", font=("Arial", 11))
+        checkbox.place(x=40, y=257)
 
-    label2 = tk.Label(main_menu, text="Skills", font=("Arial", 20),bg ="#D4D4D4",)
-    label2.place(x=40, y=177)
+        label3 = tk.Label(main_menu, text="Log:", bg="#D4D4D4", font=("Arial", 20))
+        label3.place(x=40, y=287)
 
-    folder_entry2 = tk.Entry(main_menu, width=70, font=("Arial", 12), bd=0,bg ="#FFFFFF", highlightthickness=0, highlightbackground="SystemButtonFace", insertbackground="black")
-    folder_entry2.place(x=45, y=228)
+        button1 = tk.Button(main_menu, text="About", height=2, width=17, command=self.show_about_page, font=("Arial", 13))
+        button1.place(x=40, y=600)
+        button1.lift()
 
-    checkbox_var = tk.BooleanVar()
-    checkbox = tk.Checkbutton(main_menu, width=20, text="Create folder for matches", variable=checkbox_var, bg ="#D4D4D4",font=("Arial", 11))
-    checkbox.place(x=40, y=257)
+        button2 = tk.Button(main_menu, text="Start", height=2, width=17, font=("Arial", 13))
+        button2.place(x=690, y=600)
+        button2.lift()
 
-    label3 = tk.Label(main_menu, text="Log:", bg ="#D4D4D4",font=("Arial", 20))
-    label3.place(x=40, y=287)
+        canvas_frame = tk.Frame(main_menu)
+        canvas_frame.place(x=40, y=327, width=800, height=250)
+        canvas = tk.Canvas(canvas_frame, bg="white")
+        canvas.pack(expand=True, fill=tk.BOTH)
 
-    button1 = tk.Button(main_menu, text= "About", height=2, width=17, command=lambda: show_page("page1"), font=("Arial", 13))
-    button1.place(x=40, y=600)
-    button1.lift()
+        self.log_text = tk.Text(canvas, wrap=tk.WORD, bg="white", font=("Arial", 12))
+        self.log_text.pack()
 
-    button2 = tk.Button(main_menu, text= "Start", height=2, width=17,  font=("Arial", 13))
-    button2.place(x=690, y=600)
-    button2.lift()
+        self.add_log_entry("abcd")
 
-    # Function for the log
-    def add_log_entry(text):
-        log_text.config(state=tk.NORMAL)
-        log_text.insert(tk.END, text + "\n")
-        log_text.config(state=tk.DISABLED)
+        self.main_menu = main_menu
 
-    canvas_frame = tk.Frame(main_menu)
-    canvas_frame.place(x=40, y=327, width=800, height=250)
-    canvas = tk.Canvas(canvas_frame, bg="white")
-    canvas.pack(expand=True, fill=tk.BOTH)
+    def show_about_page(self):
+        page1 = tk.Frame(self, width=900, height=750)
+        background_label = tk.Label(page1, image=self.tk_image_about)
+        background_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-    # Create a text widget inside the canvas
-    log_text = tk.Text(canvas, wrap=tk.WORD, bg="white", font=("Arial", 12))
-    log_text.pack()
+        label1 = tk.Label(page1, text="About", font=("Arial", 20), bg="#D4D4D4", bd=0, highlightthickness=0, highlightbackground="SystemButtonFace")
+        label1.place(x=50, y=87)
 
-    add_log_entry("abcd")
+        canvas_frame = tk.Frame(page1)
+        canvas_frame.place(x=40, y=150, width=800, height=450)
 
-def aboutpage():
-    global log_text, page1, tk_image_about
-    
-    # Create a frame for the About page
-    page1 = tk.Frame(root, width=900, height=750)
+        canvas = tk.Canvas(canvas_frame, bg="white")
+        canvas.grid(row=0, column=0, sticky="nsew")
+        canvas_frame.rowconfigure(0, weight=3)
+        canvas_frame.columnconfigure(0, weight=3)
 
-    # Load the background image for aboutpage
-    backimage_about = Image.open("daaabout.png")
-    backimage_about = backimage_about.resize((900, 750), Image.LANCZOS)
-    tk_image_about = ImageTk.PhotoImage(backimage_about)
-    background_label = tk.Label(page1, image=tk_image_about)
-    background_label.place(x=0, y=0, relwidth=1, relheight=1)
-    # Create a canvas widget for page1 and set the background image
-    label1 = tk.Label(page1, text="About", font=("Arial", 20),bg ="#D4D4D4", bd=0, highlightthickness=0, highlightbackground="SystemButtonFace")
-    label1.place(x=50, y=87)
+        self.log_text = tk.Text(canvas, wrap=tk.WORD, bg="white", font=("Arial", 12))
+        self.log_text.pack()
 
-    # Function for the log
-    def add_log_entry(text):
-        log_text.config(state=tk.NORMAL)
-        log_text.insert(tk.END, text + "\n")
-        log_text.config(state=tk.DISABLED)
+        self.add_log_entry("abcd")
 
-    canvas_frame = tk.Frame(page1)
-    canvas_frame.place(x=40, y=150, width=800, height=450)
+        button2 = tk.Button(page1, text="Back to Main Menu", height=2, width=17, command=self.show_main_menu)
+        button2.place(x=40, y=620)
 
-    canvas = tk.Canvas(canvas_frame, bg="white")
-    canvas.grid(row=0, column=0, sticky="nsew")  # Use grid instead of pack
-    canvas_frame.rowconfigure(0, weight=3)       # Make canvas expand vertically
-    canvas_frame.columnconfigure(0, weight=3)
+        self.page1 = page1
+        self.main_menu.place_forget()
+        self.page1.place(x=0, y=0)
 
-    # Create a text widget inside the canvas
-    log_text = tk.Text(canvas, wrap=tk.WORD, bg="white", font=("Arial", 12))
-    log_text.pack()
+    def add_log_entry(self, text):
+        self.log_text.config(state=tk.NORMAL)
+        self.log_text.insert(tk.END, text + "\n")
+        self.log_text.config(state=tk.DISABLED)
 
-    add_log_entry("abcd")
-
-    # Add any other widgets specific to aboutpage...
-
-    button2 = tk.Button(page1, text="Back to Main Menu",height=2, width=17, command=lambda: show_page("main_menu"))
-    button2.place(x=40, y=620)
-
-
-# Create a frame for the main menu
-main_menu = tk.Canvas(root, width=900, height=750)
-main_menu.place(x=0, y=0)
-
-
-
-# Call the mainpage function to set up the widgets
-mainpage()
-aboutpage()
-# Call the aboutpage function to set up the widgets, but don't show it initially
-# Instead, show the main_menu page initially
-show_page("main_menu")
-
-def disable_minimize_button():
-    root.resizable(False, False)
-
-disable_minimize_button()
-root.mainloop()
+if __name__ == "__main__":
+    app = ResumeFilterApp()
+    app.mainloop()
