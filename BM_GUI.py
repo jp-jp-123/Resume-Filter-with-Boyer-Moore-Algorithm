@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import PhotoImage, ttk, font
+from tkinter import PhotoImage, ttk, font, filedialog
 from PIL import ImageTk, Image
 
 class ResumeFilterApp(tk.Tk):
@@ -34,8 +34,9 @@ class ResumeFilterApp(tk.Tk):
         label1 = tk.Label(main_menu, text="Select Folder", font=("Arial", 20), bg="#D4D4D4", bd=0, highlightthickness=0, highlightbackground="SystemButtonFace")
         label1.place(x=50, y=87)
 
-        folder_entry1 = tk.Entry(main_menu, width=70, font=("Arial", 12), bg="#FFFFFF", bd=0, highlightthickness=0, highlightbackground="SystemButtonFace", insertbackground="black")
-        folder_entry1.place(x=45, y=140)
+        self.folder_entry1 = tk.Entry(main_menu, width=70, font=("Arial", 12), bg="#FFFFFF", bd=0, highlightthickness=0, highlightbackground="SystemButtonFace", insertbackground="black")
+        self.folder_entry1.place(x=45, y=140)
+        self.folder_entry1.bind("<Button-1>", self.select_folder)
 
         label2 = tk.Label(main_menu, text="Skills", font=("Arial", 20), bg="#D4D4D4")
         label2.place(x=40, y=177)
@@ -98,6 +99,12 @@ class ResumeFilterApp(tk.Tk):
         self.log_text.config(state=tk.NORMAL)
         self.log_text.insert(tk.END, text + "\n")
         self.log_text.config(state=tk.DISABLED)
+
+    def select_folder(self, event):
+        folder_selected = filedialog.askdirectory()
+        if folder_selected:
+            self.folder_entry1.delete(0, tk.END)
+            self.folder_entry1.insert(0, folder_selected)
 
 if __name__ == "__main__":
     app = ResumeFilterApp()
