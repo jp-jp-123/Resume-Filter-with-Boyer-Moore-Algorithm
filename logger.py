@@ -4,6 +4,7 @@
 #   
 
 import datetime
+from tkinter import END, NORMAL, DISABLED
 
 enable_logging = True
 
@@ -16,8 +17,12 @@ class Logger():
     def __init__(self, enable=True) -> None:
         self.logs = ""
         self.IsEnabled = enable
+        self.field = None
 
-    def log(self, message: str, include_time: bool=True, display_to_console: bool=False) -> str:
+    def set_field(self, field):
+        self.field = field
+
+    def log(self, message: str, include_time: bool=True, display_to_console: bool=True) -> str:
         """
         Logs a message into the logger.
         ### Params
@@ -37,6 +42,11 @@ class Logger():
             print(log)
 
         self.logs += log
+
+        if self.field:
+            self.field.config(state=NORMAL)
+            self.field.insert(END, log)
+            self.field.config(state=DISABLED)
 
         return message
     

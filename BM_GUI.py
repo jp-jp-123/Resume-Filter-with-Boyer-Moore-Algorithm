@@ -1,6 +1,9 @@
 import tkinter as tk
+import threading
+from boyermoore import BoyerMoore
 from tkinter import PhotoImage, ttk, font, filedialog
 from PIL import ImageTk, Image
+from logger import logger
 
 class ResumeFilterApp(tk.Tk):
     def __init__(self):
@@ -10,6 +13,27 @@ class ResumeFilterApp(tk.Tk):
         self.disable_minimize_button()
         self.setup_images()
         self.show_main_menu()
+
+        #
+        self.boyer_moore = BoyerMoore()
+
+    def set_path(self):
+        path = self.entry_folder.get()
+        self.boyer_moore.set_path(path)
+
+    def set_patterns(self):
+        patterns = self.entry_skills.get()
+        self.boyer_moore.parse(patterns)
+
+    def start_boyer_moore(self):
+        self.boyer_moore.start()
+
+    def start(self):
+        self.set_path()
+        self.set_patterns()
+    
+        boyer_moore_thread = threading.Thread(target=self.start_boyer_moore)
+        boyer_moore_thread.start()
 
     def disable_minimize_button(self):
         self.resizable(False, False)
@@ -34,15 +58,15 @@ class ResumeFilterApp(tk.Tk):
         label1 = tk.Label(main_menu, text="Select Folder", font=("Arial", 20), bg="#D4D4D4", bd=0, highlightthickness=0, highlightbackground="SystemButtonFace")
         label1.place(x=50, y=87)
 
-        self.folder_entry1 = tk.Entry(main_menu, width=70, font=("Arial", 12), bg="#FFFFFF", bd=0, highlightthickness=0, highlightbackground="SystemButtonFace", insertbackground="black")
-        self.folder_entry1.place(x=45, y=140)
-        self.folder_entry1.bind("<Button-1>", self.select_folder)
+        self.entry_folder = tk.Entry(main_menu, width=70, font=("Arial", 12), bg="#FFFFFF", bd=0, highlightthickness=0, highlightbackground="SystemButtonFace", insertbackground="black")
+        self.entry_folder.place(x=45, y=140)
+        self.entry_folder.bind("<Button-1>", self.select_folder)
 
         label2 = tk.Label(main_menu, text="Skills", font=("Arial", 20), bg="#D4D4D4")
         label2.place(x=40, y=177)
 
-        folder_entry2 = tk.Entry(main_menu, width=70, font=("Arial", 12), bd=0, bg="#FFFFFF", highlightthickness=0, highlightbackground="SystemButtonFace", insertbackground="black")
-        folder_entry2.place(x=45, y=228)
+        self.entry_skills = tk.Entry(main_menu, width=70, font=("Arial", 12), bd=0, bg="#FFFFFF", highlightthickness=0, highlightbackground="SystemButtonFace", insertbackground="black")
+        self.entry_skills.place(x=45, y=228)
 
         label3 = tk.Label(main_menu, text="Log:", bg="#D4D4D4", font=("Arial", 20))
         label3.place(x=40, y=265)
@@ -51,7 +75,7 @@ class ResumeFilterApp(tk.Tk):
         button1.place(x=40, y=600)
         button1.lift()
 
-        button2 = tk.Button(main_menu, text="Start", height=2, width=17, font=("Arial", 13))
+        button2 = tk.Button(main_menu, text="Start", height=2, width=17, command=self.start, font=("Arial", 13))
         button2.place(x=690, y=600)
         button2.lift()
 
@@ -62,8 +86,9 @@ class ResumeFilterApp(tk.Tk):
 
         self.log_text = tk.Text(canvas, wrap=tk.WORD, bg="white", font=("Arial", 12))
         self.log_text.pack()
+        logger.set_field(self.log_text)
 
-        self.add_log_entry("abcd")
+        # self.add_log_entry("abcd")
 
         self.main_menu = main_menu
 
@@ -86,7 +111,7 @@ class ResumeFilterApp(tk.Tk):
         self.log_text = tk.Text(canvas, wrap=tk.WORD, bg="white", font=("Arial", 12))
         self.log_text.pack()
 
-        self.add_log_entry("abcd")
+        # self.add_log_entry("abcd")
 
         button2 = tk.Button(page1, text="Back to Main Menu", height=2, width=17, command=self.show_main_menu)
         button2.place(x=40, y=620)
@@ -103,8 +128,8 @@ class ResumeFilterApp(tk.Tk):
     def select_folder(self, event):
         folder_selected = filedialog.askdirectory()
         if folder_selected:
-            self.folder_entry1.delete(0, tk.END)
-            self.folder_entry1.insert(0, folder_selected)
+            self.entry_folder.delete(0, tk.END)
+            self.entry_folder.insert(0, folder_selected)
 
 if __name__ == "__main__":
     app = ResumeFilterApp()

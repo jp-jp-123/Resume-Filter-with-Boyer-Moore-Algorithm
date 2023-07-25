@@ -355,5 +355,5 @@ def main():
     print(logger.get_logs())
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
