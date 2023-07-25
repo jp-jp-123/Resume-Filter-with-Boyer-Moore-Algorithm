@@ -40,7 +40,7 @@ class BoyerMoore:
             self.matches_count = len(self.matches)
             self.total_shifts = 0
 
-    def __init__(self, enable_logging=False) -> None:
+    def __init__(self, enable_logging=False, enable_low_level_logging=False) -> None:
         self.filepath = ""
         self.matches = []
         self.patterns = []
@@ -48,6 +48,13 @@ class BoyerMoore:
         self.matched_pdfs = []
         self.unmatched_pdfs = []
         self.enable_logging = enable_logging
+        self.enable_low_level_logging = enable_low_level_logging
+
+    def set_low_level_logging(self, value: bool):
+        """
+        Enable low level logging. 
+        """
+        self.enable_low_level_logging = value
 
     def set_path(self, filepath: str):
         """
@@ -72,20 +79,20 @@ class BoyerMoore:
 
         return bad_char
 
-    def _preprocess_suffix(self, shift, borderPosition, pattern, m):
+    def _preprocess_suffix(self, shift, borderPosition, pattern, pattern_length):
         """
         Preprocessing function for strong suffix case (case one).
         """
         i = len(pattern)
-        j = m + 1
+        j = pattern_length + 1
         borderPosition[i] = j
 
         # traversing until the size of the pattern is greater than 0
         while i > 0:
             """
-            If the character at position (i-1) is not the same as the character at (j-1), then continue the algorithm.
+            If the character at position (i - 1) is not the same as the character at (j - 1), then continue the algorithm.
             """
-            while j <= m and pattern[i - 1] != pattern[j - 1]:
+            while j <= pattern_length and pattern[i - 1] != pattern[j - 1]:
                 '''
                 The character preceding the occurrence 
                 of t in pattern P is different than the 
@@ -100,19 +107,19 @@ class BoyerMoore:
                 j = borderPosition[j]
 
             """
-            Since p[i-1] is matched with p[j-1] then we have found the border, then store the border.
+            Since p[i - 1] is matched with p[j - 1] then we have found the border, then store the border.
             """
             i -= 1
             j -= 1
             borderPosition[i] = j
 
-    def _preprocess_prefix(self, shift, borderPosition, pattern, m):
+    def _preprocess_prefix(self, shift, borderPosition, pattern, pattern_length):
         """
         Preprocessing function for prefix case (case two).
         """
         j = borderPosition[0]
 
-        for i in range(m + 1):
+        for i in range(pattern_length + 1):
             """
             setting the border position of the pattern's first character to all the indices in the shift array.
             """
@@ -153,9 +160,19 @@ class BoyerMoore:
         while current_shift <= text_length - pattern_length:
             j = pattern_length - 1
 
+            if self.enable_low_level_logging:
+                comparor = pattern
+                comparee = text[current_shift: current_shift + pattern_length]
+                logger.log(f"Comparing '{comparor}' and '{comparee}'")
+                
             # Keep comparing characters until mismatch
             # This is relative to the current shift
             while j >= 0 and pattern[j] == text[current_shift + j]:
+                if self.enable_low_level_logging:
+                    comparor = pattern[j]
+                    comparee = text[current_shift + j]
+                    logger.log(f"- Comparing characters '{comparor}' and '{comparee}'")
+
                 if enable_debugging:
                     cls()
                     print(text)
@@ -167,30 +184,42 @@ class BoyerMoore:
                     input()
                 j -= 1
 
-            if enable_debugging and j > 0:
-                cls()
-                print(text)
-                space = " " * current_shift
-                needle_offset = " " * (current_shift + j)
-                print(f"{space}{pattern}".format())
-                print(f"{needle_offset}^".format())
-                print(f"Mismatch occured at index: {j}")
+            if j > 0:
+                if self.enable_low_level_logging:
+                    comparor = pattern[j]
+                    comparee = text[current_shift + j]
+                    logger.log(f"- Mismatch of '{comparor}' and '{comparee}'")
+
+                if enable_debugging:
+                    cls()
+                    print(text)
+                    space = " " * current_shift
+                    needle_offset = " " * (current_shift + j)
+                    print(f"{space}{pattern}".format())
+                    print(f"{needle_offset}^".format())
+                    print(f"- Mismatch occured at index: {j}")
 
             # If the pattern is present at current shift
             # then index j will become -1 after the above loop
             if j < 0:
+                if self.enable_low_level_logging:
+                    logger.log(f"- Pattern match at index: {current_shift + 1}")
+
                 if enable_debugging:
                     print(f"Pattern match at: {current_shift + 1}")
+
                 result.matches.append(current_shift)
 
                 """   
                 Shift the pattern so that the next character in text
                 aligns with the last occurrence of it in pattern.
-                The condition s+m < n is necessary for the case when
-                pattern occurs at the end of text
+                The condition 'current_shift + pattern_length > text_length' is necessary for the case when
+                pattern occurs at the end of text.
                 """
-                bad_character_shift = (pattern_length - bad_char[
-                    ord(text[current_shift + pattern_length])] if current_shift + pattern_length < text_length else 1)
+                if current_shift + pattern_length < text_length:
+                    bad_character_shift = pattern_length - bad_char[ord(text[current_shift + pattern_length])]
+                else:
+                    bad_character_shift = 1
                 good_suffix_shift = suffix_shift_table[0]
             else:
                 """
@@ -201,9 +230,24 @@ class BoyerMoore:
                 of bad character in pattern is on the right side of the
                 current character.
                 """
-                # print(current_shift)
                 bad_character_shift = max(1, j - bad_char[ord(text[current_shift + j])])
                 good_suffix_shift = suffix_shift_table[j + 1]
+
+            # if self.enable_logging:
+            #     logger.log("")
+
+            # if self.enable_low_level_logging:
+            #     logger.log(f"BCS: {bad_character_shift} | GSS: {good_suffix_shift}")
+            #     if (bad_character_shift > good_suffix_shift):
+            #         logger.log("Will use Bad character rule")
+            #     else:
+            #         logger.log("Will use Good suffix rule")
+
+            if self.enable_low_level_logging:
+                if (bad_character_shift > good_suffix_shift):
+                    logger.log(f"- Will use Bad character rule with shift of {bad_character_shift}")
+                else:
+                    logger.log(f"- Will use Good suffix rule with shift of {good_suffix_shift}")
 
             if enable_debugging:
                 print(f"BCS: {bad_character_shift} | GSS: {good_suffix_shift}")
@@ -214,6 +258,7 @@ class BoyerMoore:
                 input()
                 cls()
 
+            # Select rule with greater shift
             current_shift += max(bad_character_shift, good_suffix_shift)
 
         result.pattern = pattern
@@ -236,10 +281,14 @@ class BoyerMoore:
                 break
 
             text = pdf_contents
-
+            
             for patterns in self.patterns:
                 results = []
                 for pattern in patterns:
+                            
+                    if self.enable_logging:
+                        logger.log(f"Searching pattern '{pattern}' from {pdf_file}")
+                        
                     result = self._search(text, pattern)
                     result.filename = pdf_file
                     results.append(result)
@@ -268,6 +317,7 @@ class BoyerMoore:
 
         # Iterate through results (it's a list of list)
         self.matches = []
+        self.no_matches = []
 
         for results in self.results:
             # Result is an OR statement
@@ -275,6 +325,8 @@ class BoyerMoore:
                 for result in results:
                     if result.matches_count != 0:
                         self.matches.append(results)
+                    else:
+                        self.no_matches.append(results)
             # Result is an AND statement
             else:
                 has_matches = False
@@ -289,6 +341,8 @@ class BoyerMoore:
 
                 if has_matches:
                     self.matches.append(results)
+                else:
+                    self.no_matches.append(results)
 
         return
 

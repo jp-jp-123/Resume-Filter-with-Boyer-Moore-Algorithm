@@ -51,7 +51,7 @@ class PDFHandler:
             path = self.folder_path
 
         if self.enable_logging:
-            logger.log(f"Start reading folder {self.folder_path}")
+            logger.log(f"Initializing data set from {self.folder_path}")
 
         for file in os.listdir(path):
             if file.endswith('.pdf'):

@@ -1,6 +1,11 @@
+# 
+#   Authors:
+#   Johnmar James Munar
+#   - GUI
+#
+
 import tkinter as tk
 import threading
-# import boyermoore
 from boyermoore import BoyerMoore
 from tkinter import PhotoImage, ttk, font, filedialog
 from PIL import ImageTk, Image
@@ -27,8 +32,8 @@ class ResumeFilterApp(tk.Tk):
         self.boyer_moore.parse(patterns)
 
     def start_boyer_moore(self):
+        self.boyer_moore.set_low_level_logging(True)
         self.boyer_moore.start()
-        self.boyer_moore.parse_results()
         self.boyer_moore.segregate_pdf()
         logger.make_logfile(self.boyer_moore.filepath)
 
@@ -128,7 +133,6 @@ class ResumeFilterApp(tk.Tk):
         self.log_text.config(state=tk.NORMAL)
         self.log_text.insert(tk.END, text + "\n")
         self.log_text.config(state=tk.DISABLED)
-        self.log_text.see(tk.END)
 
     def select_folder(self, event):
         folder_selected = filedialog.askdirectory()

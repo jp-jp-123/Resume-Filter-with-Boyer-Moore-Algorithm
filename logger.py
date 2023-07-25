@@ -49,6 +49,7 @@ class Logger():
             self.field.config(state=NORMAL)
             self.field.insert(END, log)
             self.field.config(state=DISABLED)
+            # self.field.see(END)
 
         return message
     
