@@ -42,6 +42,7 @@ class BoyerMoore:
 
     def __init__(self, enable_logging=False) -> None:
         self.filepath = ""
+        self.matches = []
         self.patterns = []
         self.results = []
         self.matched_pdfs = []
@@ -245,7 +246,8 @@ class BoyerMoore:
 
                 self.results.append(results)
 
-                # TODO: Resume segretation (matched and unmatched)
+        self.segregate_pdf()
+        print("done")
 
     def parse(self, string: str):
         """
@@ -292,67 +294,36 @@ class BoyerMoore:
 
         return
 
+    def segregate_pdf(self):
+        pdfhandler = PDFHandler()
+        print(self.matches)
 
-def main():
-    boyer_moore = BoyerMoore(enable_logging=True)
-    # GUI should utilize this command vv
-    # set_path = r"C:\Users\Lenovo\PycharmProjects\DAA\test data\selected"
-    set_path = r"C:\Users\Lenovo\Documents\DOCX\test data\selected"
+        # TODO: fix self.matches shows up as empty list
+        file_patterns_dict = {}
+        for results in self.matches:
+            for result in results:
+                filename = result.filename
+                pattern = result.pattern
+                pattern = pattern.split(",")
 
-    boyer_moore.set_path(set_path)
-    boyer_moore.parse("(ADP) or (ERP and DTS and ERO)")
-    # boyer_moore.add_pattern("staff")
-    # boyer_moore.add_pattern("person")
-    # boyer_moore.add_pattern("data")
-    boyer_moore.start()
-    boyer_moore.parse_results()
+                print("Filename:", filename)
+                print("Patterns:", pattern)
+                # print("type", type(pattern))
 
-    pdfhandler = PDFHandler()
+                if filename in file_patterns_dict:
+                    file_patterns_dict[filename].update(pattern)
+                else:
+                    file_patterns_dict[filename] = set(pattern)
 
-    # for result in boyer_moore.results:
-    #     print(f"File: {result.filename}")
-    #     print(f"\tPattern: {result.pattern}")
-    #     print(f"\tText length: {result.text_length}")
-    #     print(f"\tPattern occurences: {result.matches}")
-    #     print(f"\tPattern count: {result.matches_count}")
+        for files in file_patterns_dict:
+            separator = " and "
 
-    #     # Add condition later to enable and disable this function
-    #     if result.matches_count > 0:
-    #         pdfhandler._copy_pdf(set_path, result.filename, result.pattern)
+            patterns = separator.join(file_patterns_dict[files])
 
-    # pdfhandler._del_pdf(set_path)
+            pdfhandler._copy_pdf(self.filepath, files, patterns)
 
-    # This loop unpacks the objects and puts them into dictionaries
-    # the split() method apparently stops the set() from separating the str into characters
-    file_patterns_dict = {}
-    for results in boyer_moore.matches:
-        for result in results:
-            filename = result.filename
-            pattern = result.pattern
-            pattern = pattern.split(",")
+        pdfhandler._del_pdf(self.filepath)
 
-            # print("Filename:", filename)
-            # print("Patterns:", pattern)
-            # print("type", type(pattern))
-
-            if filename in file_patterns_dict:
-                file_patterns_dict[filename].update(pattern)
-            else:
-                file_patterns_dict[filename] = set(pattern)
-
-    # Iterates the dict and calls the _copy_pdf method
-    for files in file_patterns_dict:
-        separator = " and "
-
-        filename = files
-        patterns = separator.join(file_patterns_dict[files])
-
-        pdfhandler._copy_pdf(set_path, files, patterns)
-
-    pdfhandler._del_pdf(set_path)
-
-    print("\nLogs:")
-    print(logger.get_logs())
 
 
 # if __name__ == "__main__":
