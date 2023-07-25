@@ -4,6 +4,8 @@
 #   
 
 import datetime
+import os
+# from BM_GUI import ResumeFilterApp as RFA
 from tkinter import END, NORMAL, DISABLED
 
 enable_logging = True
@@ -47,10 +49,24 @@ class Logger():
             self.field.config(state=NORMAL)
             self.field.insert(END, log)
             self.field.config(state=DISABLED)
+            # self.field.see(END)
 
         return message
     
     def get_logs(self) -> str:
         return self.logs
+
+    def make_logfile(self, filepath):
+        root_path = filepath
+        time = f"Log {datetime.datetime.now().strftime('%H-%M-%S')}.txt"
+        log_path = os.path.join(root_path, time)
+        log_path = os.path.normpath(log_path)
+
+        try:
+            with open(log_path, 'x') as w:
+                w.write(self.get_logs())
+        except FileExistsError:
+            pass
+
 
 logger = Logger(enable_logging)
