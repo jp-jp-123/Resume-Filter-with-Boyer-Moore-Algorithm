@@ -54,9 +54,7 @@ class ResumeFilterApp(tk.Tk):
         self.log_text.config(state=tk.NORMAL)
         self.log_text.insert(tk.END, text + "\n")
         self.log_text.config(state=tk.DISABLED)
-
     def autoscroll(self):
-        # This function scrolls the canvas to the bottom.
         self.canvas.yview_moveto(1.0)
 
 
@@ -98,12 +96,9 @@ class ResumeFilterApp(tk.Tk):
         self.log_text = tk.Text(self.canvas, wrap=tk.WORD, bg="white", font=("Arial", 12))
         self.log_text.pack()
         logger.set_field(self.log_text)
-
         self.scrollbar = tk.Scrollbar(canvas_frame, command=self.log_text.yview)
         self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         self.log_text.config(yscrollcommand=self.scrollbar.set)
-
-       
         self.main_menu = main_menu
     def show_about_page(self):
         page1 = tk.Frame(self, width=900, height=750)
