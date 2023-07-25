@@ -296,7 +296,8 @@ class BoyerMoore:
 def main():
     boyer_moore = BoyerMoore(enable_logging=True)
     # GUI should utilize this command vv
-    set_path = r"C:\Users\Lenovo\PycharmProjects\DAA\test data\selected"
+    # set_path = r"C:\Users\Lenovo\PycharmProjects\DAA\test data\selected"
+    set_path = r"C:\Users\Lenovo\Documents\DOCX\test data\selected"
 
     boyer_moore.set_path(set_path)
     boyer_moore.parse("(ADP) or (ERP and DTS and ERO)")
@@ -348,6 +349,8 @@ def main():
         print(filename, patterns)
 
         pdfhandler._copy_pdf(set_path, files, patterns)
+
+    pdfhandler._del_pdf(set_path)
 
     print("\nLogs:")
     print(logger.get_logs())
