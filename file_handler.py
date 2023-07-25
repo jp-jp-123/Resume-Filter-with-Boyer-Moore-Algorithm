@@ -28,6 +28,7 @@ class PDFHandler:
         self.folder_path = path
         self.enable_logging = enable_logging
         self.current_log = ""
+        self.copied_files_list = []
 
     def set_path(self, path: str):
         """
@@ -90,7 +91,8 @@ class PDFHandler:
     def _copy_pdf(self, path, file_matches, pattern):
         """
         Creates a new folder in root directory with pattern as the name, then copies all the file with
-        matches into it.
+        matches into it. Lists all the copied lists for deletion
+        :param path: root path
         :param file_matches: filenames of the matched pdfs
         :param pattern: the pattern to be used in new directory
         :return:
@@ -101,8 +103,9 @@ class PDFHandler:
         new_path = os.path.join(path, pattern)
         try:
             os.mkdir(new_path)
+            logger.log(f"{new_path} has been created")
         except OSError:
-            pass
+            logger.log(f"{new_path} already exists")
 
         for file in range(len(file_matches_list)):
             current_file = file_matches_list[file]
@@ -111,3 +114,26 @@ class PDFHandler:
             destination_file = os.path.join(new_path, current_file)
 
             shutil.copy2(source_file, destination_file)
+            logger.log(f"{source_file} has been moved to {destination_file}")
+
+            self.copied_files_list.append(source_file)
+
+    def _del_pdf(self, path):
+        """
+        deletes the files that has been copied. Essentially moving a file but due to code structure, this has to be done
+        separately. 'cfl' creates a list with all duplicate filenames removed.
+        :param path: root path
+        :return:
+        """
+
+        cfl = list(set(self.copied_files_list))
+
+        for file in range(len(cfl)):
+            current_file = os.path.join(path, cfl[file])
+
+            if os.path.exists(current_file):
+                os.remove(current_file)
+                logger.log(f"{cfl[file]} has been removed in {path}")
+
+            else:
+                logger.log(f"{cfl[file]} doesn't exist")
