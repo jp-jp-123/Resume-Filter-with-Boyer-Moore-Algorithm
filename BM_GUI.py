@@ -43,12 +43,8 @@ class ResumeFilterApp(tk.Tk):
         folder_entry2 = tk.Entry(main_menu, width=70, font=("Arial", 12), bd=0, bg="#FFFFFF", highlightthickness=0, highlightbackground="SystemButtonFace", insertbackground="black")
         folder_entry2.place(x=45, y=228)
 
-        checkbox_var = tk.BooleanVar()
-        checkbox = tk.Checkbutton(main_menu, width=20, text="Create folder for matches", variable=checkbox_var, bg="#D4D4D4", font=("Arial", 11))
-        checkbox.place(x=40, y=257)
-
         label3 = tk.Label(main_menu, text="Log:", bg="#D4D4D4", font=("Arial", 20))
-        label3.place(x=40, y=287)
+        label3.place(x=40, y=265)
 
         button1 = tk.Button(main_menu, text="About", height=2, width=17, command=self.show_about_page, font=("Arial", 13))
         button1.place(x=40, y=600)
