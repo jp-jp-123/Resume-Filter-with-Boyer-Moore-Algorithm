@@ -7,11 +7,13 @@
 #   
 
 import os
+import datetime
 from logger import logger
 from file_handler import PDFHandler
 
 # Expanded the char table to questionable size to accommodate questionable characters
 NO_OF_CHARS = 10000
+ 
 
 
 def cls():
@@ -81,7 +83,7 @@ class BoyerMoore:
 
     def _preprocess_suffix(self, shift, borderPosition, pattern, pattern_length):
         """
-        Preprocessing function for strong suffix case (case one).
+        Preprocessing function for strong suffix case.
         """
         i = len(pattern)
         j = pattern_length + 1
@@ -163,7 +165,7 @@ class BoyerMoore:
             if self.enable_low_level_logging:
                 comparor = pattern
                 comparee = text[current_shift: current_shift + pattern_length]
-                logger.log(f"Comparing '{comparor}' and '{comparee}'")
+                logger.log(f"Comparing P:'{comparor}' to T:'{comparee}'")
                 
             # Keep comparing characters until mismatch
             # This is relative to the current shift
@@ -171,7 +173,7 @@ class BoyerMoore:
                 if self.enable_low_level_logging:
                     comparor = pattern[j]
                     comparee = text[current_shift + j]
-                    logger.log(f"- Comparing characters '{comparor}' and '{comparee}'")
+                    logger.log(f"- Characters match '{comparor}' and '{comparee}': [{j}]")
 
                 if enable_debugging:
                     cls()
@@ -188,7 +190,7 @@ class BoyerMoore:
                 if self.enable_low_level_logging:
                     comparor = pattern[j]
                     comparee = text[current_shift + j]
-                    logger.log(f"- Mismatch of '{comparor}' and '{comparee}'")
+                    logger.log(f"- Mismatch of '{comparor}' and '{comparee}': [{j}]")
 
                 if enable_debugging:
                     cls()
@@ -233,21 +235,22 @@ class BoyerMoore:
                 bad_character_shift = max(1, j - bad_char[ord(text[current_shift + j])])
                 good_suffix_shift = suffix_shift_table[j + 1]
 
-            # if self.enable_logging:
-            #     logger.log("")
-
-            # if self.enable_low_level_logging:
-            #     logger.log(f"BCS: {bad_character_shift} | GSS: {good_suffix_shift}")
-            #     if (bad_character_shift > good_suffix_shift):
-            #         logger.log("Will use Bad character rule")
-            #     else:
-            #         logger.log("Will use Good suffix rule")
-
             if self.enable_low_level_logging:
                 if (bad_character_shift > good_suffix_shift):
-                    logger.log(f"- Will use Bad character rule with shift of {bad_character_shift}")
+                    if bad_character_shift != j + 1:
+                        logger.log(f"- Bad character case one: Mismatched character '{comparee}' present in pattern")
+                    else:
+                        logger.log(f"- Bad character case two: Mismatched character '{comparee}' not present in pattern")
+                    logger.log(f"- Shift by {bad_character_shift}")
+                    
                 else:
-                    logger.log(f"- Will use Good suffix rule with shift of {good_suffix_shift}")
+                    if good_suffix_shift == pattern_length:
+                        logger.log(f"- Good suffix case three: No prefix of P present in matched suffix")
+                    elif good_suffix_shift == j:
+                        logger.log(f"- Good suffix case two: prefix of P present in matched suffix")
+                    else:
+                        logger.log(f"- Strong good suffix")
+                    logger.log(f"- Shift by {good_suffix_shift}")
 
             if enable_debugging:
                 print(f"BCS: {bad_character_shift} | GSS: {good_suffix_shift}")
@@ -270,6 +273,7 @@ class BoyerMoore:
         """
         Start Boyer-Moore algorithm.
         """
+        start_time = datetime.datetime.now()
         # Process files
         pdf_handler = PDFHandler(enable_logging=True)
         pdf_handler.set_path(self.filepath)
@@ -295,6 +299,8 @@ class BoyerMoore:
 
                 self.results.append(results)
 
+        end_time = datetime.datetime.now() - start_time
+        logger.log(f"Finished execution at {end_time.total_seconds()} s")
 
     def parse(self, string: str):
         """

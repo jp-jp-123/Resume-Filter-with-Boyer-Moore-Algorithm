@@ -93,7 +93,7 @@ class ResumeFilterApp(tk.Tk):
         canvas = tk.Canvas(canvas_frame, bg="white")
         canvas.pack(expand=True, fill=tk.BOTH)
 
-        self.log_text = tk.Text(canvas, wrap=tk.WORD, bg="white", font=("Arial", 12))
+        self.log_text = tk.Text(canvas, wrap=tk.WORD, bg="white", font=("Consolas", 12))
         self.log_text.pack()
         logger.set_field(self.log_text)
 
