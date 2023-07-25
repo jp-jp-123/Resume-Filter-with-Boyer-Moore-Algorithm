@@ -13,6 +13,7 @@ from file_handler import PDFHandler
 # Expanded the char table to questionable size to accommodate questionable characters
 NO_OF_CHARS = 10000
 
+
 def cls():
     """
     Clears the console.
@@ -20,7 +21,7 @@ def cls():
     os.system('cls')
 
 
-class BoyerMoore:   
+class BoyerMoore:
     """
     Initialize a Boyer-Moore object to be used on string pattern matching...
     """
@@ -30,7 +31,7 @@ class BoyerMoore:
         Boyer-Moore result object.
         """
 
-        def __init__(self, filename: str=""):
+        def __init__(self, filename: str = ""):
             self.filename = filename
             self.pattern = ""
             self.text_length = 0
@@ -38,7 +39,6 @@ class BoyerMoore:
             self.matches = []
             self.matches_count = len(self.matches)
             self.total_shifts = 0
-            
 
     def __init__(self, enable_logging=False) -> None:
         self.filepath = ""
@@ -242,10 +242,10 @@ class BoyerMoore:
                     result = self._search(text, pattern)
                     result.filename = pdf_file
                     results.append(result)
-                
+
                 self.results.append(results)
 
-                #TODO: Resume segretation (matched and unmatched)
+                # TODO: Resume segretation (matched and unmatched)
 
     def parse(self, string: str):
         """
@@ -296,16 +296,15 @@ class BoyerMoore:
 def main():
     boyer_moore = BoyerMoore(enable_logging=True)
     # GUI should utilize this command vv
-    set_path = r"C:\Users\Owner\Documents\GitHub\DAA\test data\ACCOUNTANT"
+    set_path = r"C:\Users\Lenovo\PycharmProjects\DAA\test data\selected"
 
     boyer_moore.set_path(set_path)
-    boyer_moore.parse("employee or (budget and cost and invoice) or (sql and python)")
+    boyer_moore.parse("(ADP) or (ERP and DTS and ERO)")
     # boyer_moore.add_pattern("staff")
     # boyer_moore.add_pattern("person")
     # boyer_moore.add_pattern("data")
     boyer_moore.start()
     boyer_moore.parse_results()
-
 
     pdfhandler = PDFHandler()
 
@@ -322,7 +321,37 @@ def main():
 
     # pdfhandler._del_pdf(set_path)
 
+    # This loop unpacks the objects and puts them into dictionaries
+    # the split() method apparently stops the set() from separating the str into characters
+    file_patterns_dict = {}
+    for results in boyer_moore.matches:
+        for result in results:
+            filename = result.filename
+            pattern = result.pattern
+            pattern = pattern.split(",")
+
+            # print("Filename:", filename)
+            # print("Patterns:", pattern)
+            # print("type", type(pattern))
+
+            if filename in file_patterns_dict:
+                file_patterns_dict[filename].update(pattern)
+            else:
+                file_patterns_dict[filename] = set(pattern)
+
+    # Iterates the dict and calls the _copy_pdf method
+    for files in file_patterns_dict:
+        separator = " and "
+
+        filename = files
+        patterns = separator.join(file_patterns_dict[files])
+        print(filename, patterns)
+
+        pdfhandler._copy_pdf(set_path, files, patterns)
+
     print("\nLogs:")
     print(logger.get_logs())
 
-# main()
+
+if __name__ == "__main__":
+    main()
