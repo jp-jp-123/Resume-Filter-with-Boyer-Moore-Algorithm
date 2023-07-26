@@ -13,12 +13,10 @@ class ResumeFilterApp(tk.Tk):
         self.disable_minimize_button()
         self.setup_images()
         self.show_main_menu()
-        self.after(1, self.check_new_log_entries)
+
         #
         self.boyer_moore = BoyerMoore()
-    def check_new_log_entries(self):
-        self.autoscroll()
-        self.after(1, self.check_new_log_entries)
+
     def set_path(self):
         path = self.entry_folder.get()
         self.boyer_moore.set_path(path)
@@ -29,11 +27,6 @@ class ResumeFilterApp(tk.Tk):
 
     def start_boyer_moore(self):
         self.boyer_moore.start()
-        self.boyer_moore.set_low_level_logging(False)
-        self.boyer_moore.set_low_level_logging(True)
-        self.boyer_moore.start()
-        self.boyer_moore.segregate_pdf()
-        logger.make_logfile(self.boyer_moore.filepath)
 
     def start(self):
         self.set_path()
@@ -55,12 +48,7 @@ class ResumeFilterApp(tk.Tk):
         backimage_about = Image.open("daaabout.png")
         backimage_about = backimage_about.resize((900, 750), Image.LANCZOS)
         self.tk_image_about = ImageTk.PhotoImage(backimage_about)
-    def add_log_entry(self, text):
-        self.log_text.config(state=tk.NORMAL)
-        self.log_text.insert(tk.END, text + "\n")
-        self.log_text.config(state=tk.DISABLED)
-    def autoscroll(self):
-        self.canvas.yview_moveto(1.0)
+
     def show_main_menu(self):
         main_menu = tk.Canvas(self, width=900, height=750)
         main_menu.place(x=0, y=0)
@@ -93,16 +81,17 @@ class ResumeFilterApp(tk.Tk):
 
         canvas_frame = tk.Frame(main_menu)
         canvas_frame.place(x=40, y=327, width=800, height=250)
-        self.canvas = tk.Canvas(canvas_frame, bg="white")
-        self.canvas.pack(expand=True, fill=tk.BOTH)
+        canvas = tk.Canvas(canvas_frame, bg="white")
+        canvas.pack(expand=True, fill=tk.BOTH)
 
-        self.log_text = tk.Text(self.canvas, wrap=tk.WORD, bg="white", font=("Arial", 12))
+        self.log_text = tk.Text(canvas, wrap=tk.WORD, bg="white", font=("Arial", 12))
         self.log_text.pack()
         logger.set_field(self.log_text)
-        self.scrollbar = tk.Scrollbar(canvas_frame, command=self.log_text.yview)
-        self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        self.log_text.config(yscrollcommand=self.scrollbar.set)
+
+        # self.add_log_entry("abcd")
+
         self.main_menu = main_menu
+
     def show_about_page(self):
         page1 = tk.Frame(self, width=900, height=750)
         background_label = tk.Label(page1, image=self.tk_image_about)
@@ -131,8 +120,11 @@ class ResumeFilterApp(tk.Tk):
         self.main_menu.place_forget()
         self.page1.place(x=0, y=0)
 
-    def autoscroll(self):
-        self.log_text.yview(tk.END)
+    def add_log_entry(self, text):
+        self.log_text.config(state=tk.NORMAL)
+        self.log_text.insert(tk.END, text + "\n")
+        self.log_text.config(state=tk.DISABLED)
+        self.log_text.see(tk.END)
 
     def select_folder(self, event):
         folder_selected = filedialog.askdirectory()
