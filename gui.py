@@ -13,12 +13,12 @@ class ResumeFilterApp(tk.Tk):
         self.disable_minimize_button()
         self.setup_images()
         self.show_main_menu()
-        self.after(100, self.check_new_log_entries)
+        self.after(1, self.check_new_log_entries)
         #
         self.boyer_moore = BoyerMoore()
     def check_new_log_entries(self):
         self.autoscroll()
-        self.after(100, self.check_new_log_entries)
+        self.after(1, self.check_new_log_entries)
     def set_path(self):
         path = self.entry_folder.get()
         self.boyer_moore.set_path(path)
