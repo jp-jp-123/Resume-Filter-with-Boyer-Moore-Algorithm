@@ -56,16 +56,19 @@ class Logger():
     def get_logs(self) -> str:
         return self.logs
 
-    def make_logfile(self, filepath):
-        root_path = filepath
-        time = f"Log {datetime.datetime.now().strftime('%H-%M-%S')}.txt"
-        log_path = os.path.join(root_path, time)
-        log_path = os.path.normpath(log_path)
+    def make_logfile(self, filepath, enable=True):
+        if enable:
+            root_path = filepath
+            time = f"Log {datetime.datetime.now().strftime('%H-%M-%S')}.txt"
+            log_path = os.path.join(root_path, time)
+            log_path = os.path.normpath(log_path)
 
-        try:
-            with open(log_path, 'x') as w:
-                w.write(self.get_logs())
-        except FileExistsError:
+            try:
+                with open(log_path, 'x', encoding='utf-8') as w:
+                    w.write(self.get_logs())
+            except FileExistsError:
+                pass
+        else:
             pass
 
 
