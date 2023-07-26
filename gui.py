@@ -26,7 +26,6 @@ class ResumeFilterApp(tk.Tk):
         self.boyer_moore.parse(patterns)
 
     def start_boyer_moore(self):
-        self.boyer_moore.start()
         self.boyer_moore.set_low_level_logging(False)
         self.boyer_moore.start()
         self.boyer_moore.parse_results()
