@@ -30,10 +30,10 @@ class ResumeFilterApp(tk.Tk):
     def start_boyer_moore(self):
         self.boyer_moore.start()
         self.boyer_moore.set_low_level_logging(False)
+        self.boyer_moore.set_low_level_logging(True)
         self.boyer_moore.start()
-        self.boyer_moore.parse_results()
         self.boyer_moore.segregate_pdf()
-        logger.make_logfile(self.boyer_moore.filepath, enable=False)
+        logger.make_logfile(self.boyer_moore.filepath)
 
     def start(self):
         self.set_path()
